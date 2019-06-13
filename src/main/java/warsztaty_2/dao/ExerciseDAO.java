@@ -6,8 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.time.LocalDateTime;
-import warsztaty_2.models.Solution;
+import warsztaty_2.models.Exercise;
 import util.DbUtil;
 
 /**
@@ -16,27 +15,22 @@ import util.DbUtil;
  */
 public class ExerciseDAO {
 
-    public void Create(Solution solution) {
+    public void Create(Exercise exercise) {
 
-        try {
+        try (Connection con = DbUtil.getCon()) {
 
-            Connection con = DbUtil.getCon();
+            if (exercise.getId() == 0) {
 
-            if (solution.getId() == 0) {
-
-                String sql = "INSERT INTO solution(created, updated, description, exercise_id, user_id) VALUES(?, ?, ?, ?, ?)";
+                String sql = "INSERT INTO exercise(title, description) VALUES(?, ?)";
                 PreparedStatement stmt = con.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
-                stmt.setString(1, solution.getCreated().toString());
-                stmt.setString(2, solution.getUpdated().toString());
-                stmt.setString(3, solution.getDescription());
-                stmt.setInt(4, solution.getExercise_id());
-                stmt.setInt(5, solution.getUser_id());
+                stmt.setString(1, exercise.getTitle());
+                stmt.setString(2, exercise.getDescription());
                 stmt.executeUpdate();
                 ResultSet rs = stmt.getGeneratedKeys();
 
                 if (rs.next()) {
 
-                    solution.setId(rs.getInt(1));
+                    exercise.setId(rs.getInt(1));
                 }
             }
 
@@ -46,39 +40,31 @@ public class ExerciseDAO {
         }
     }
 
-    public void Update(Solution solution) {
+    public void Update(Exercise exercise) {
 
-        try {
+        try (Connection con = DbUtil.getCon()) {
 
-            Connection con = DbUtil.getCon();
+            if (exercise.getId() == 0) {
 
-            if (solution.getId() == 0) {
-
-                String sql = "INSERT INTO solution(created, updated, description, exercise_id, user_id) VALUES(?, ?, ?, ?, ?)";
+                String sql = "INSERT INTO exercise(title, description) VALUES(?, ?)";
                 PreparedStatement stmt = con.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
-                stmt.setString(1, solution.getCreated().toString());
-                stmt.setString(2, solution.getUpdated().toString());
-                stmt.setString(3, solution.getDescription());
-                stmt.setInt(4, solution.getExercise_id());
-                stmt.setInt(5, solution.getUser_id());
+                stmt.setString(1, exercise.getTitle());
+                stmt.setString(2, exercise.getDescription());
                 stmt.executeUpdate();
                 ResultSet rs = stmt.getGeneratedKeys();
 
                 if (rs.next()) {
 
-                    solution.setId(rs.getInt(1));
+                    exercise.setId(rs.getInt(1));
                 }
 
             } else {
 
-                String sql = "UPDATE solution SET created=?, updated=?, description=?, exercise_id=?, user_id=? WHERE id=?";
+                String sql = "UPDATE exercise SET title=?, description=? WHERE id=?";
                 PreparedStatement stmt = con.prepareStatement(sql);
-                stmt.setString(1, solution.getCreated().toString());
-                stmt.setString(2, solution.getUpdated().toString());
-                stmt.setString(3, solution.getDescription());
-                stmt.setInt(4, solution.getExercise_id());
-                stmt.setInt(5, solution.getUser_id());
-                stmt.setInt(6, solution.getId());
+                stmt.setString(1, exercise.getTitle());
+                stmt.setString(2, exercise.getDescription());
+                stmt.setInt(3, exercise.getId());
                 stmt.executeUpdate();
                 ResultSet rs = stmt.getGeneratedKeys();
             }
@@ -89,19 +75,17 @@ public class ExerciseDAO {
         }
     }
 
-    public void Delete(Solution solution) {
+    public void Delete(Exercise exercise) {
 
-        try {
+        try (Connection con = DbUtil.getCon()) {
 
-            Connection con = DbUtil.getCon();
+            if (exercise.getId() != 0) {
 
-            if (solution.getId() != 0) {
-
-                String sql = "DELETE FROM solution WHERE id=?";
+                String sql = "DELETE FROM exercise WHERE id=?";
                 PreparedStatement stmt = con.prepareStatement(sql);
-                stmt.setInt(1, solution.getId());
+                stmt.setInt(1, exercise.getId());
                 stmt.executeUpdate();
-                solution.setId(0);
+                exercise.setId(0);
             }
 
         } catch (SQLException e) {
@@ -110,28 +94,23 @@ public class ExerciseDAO {
         }
     }
 
-    public List<Solution> findAll(int id) {
+    public List<Exercise> findAll() {
 
-        List<Solution> solutions = new ArrayList<>();
+        List<Exercise> exercises = new ArrayList<>();
 
-        try {
+        try (Connection con = DbUtil.getCon()) {
 
-            Connection con = DbUtil.getCon();
-
-            String sql = "SELECT FROM solution";
+            String sql = "SELECT * FROM exercise";
             PreparedStatement stmt = con.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
 
-                Solution solution = new Solution();
-                solution.setId(rs.getInt("id"));
-                solution.setCreated(LocalDateTime.parse(rs.getString("created")));
-                solution.setUpdated(LocalDateTime.parse(rs.getString("updated")));
-                solution.setDescription(rs.getString("description"));
-                solution.setExercise_id(rs.getInt("exercise_id"));
-                solution.setUser_id(rs.getInt("user_id"));
-                solutions.add(solution);
+                Exercise exercise = new Exercise();
+                exercise.setId(rs.getInt("id"));
+                exercise.setTitle(rs.getString("title"));
+                exercise.setDescription(rs.getString("description"));
+                exercises.add(exercise);
             }
 
         } catch (SQLException e) {
@@ -139,29 +118,25 @@ public class ExerciseDAO {
             e.printStackTrace();
         }
 
-        return solutions;
+        return exercises;
     }
 
-    public Solution findById(int id) {
+    public Exercise findById(int id) {
 
-        try {
+        try (Connection con = DbUtil.getCon()) {
 
-            Connection con = DbUtil.getCon();
-
-            String sql = "SELECT FROM solution";
+            String sql = "SELECT * FROM exercise WHERE id=?";
             PreparedStatement stmt = con.prepareStatement(sql);
+            stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
 
-                Solution solution = new Solution();
-                solution.setId(rs.getInt("id"));
-                solution.setCreated(LocalDateTime.parse(rs.getString("created")));
-                solution.setUpdated(LocalDateTime.parse(rs.getString("updated")));
-                solution.setDescription(rs.getString("description"));
-                solution.setExercise_id(rs.getInt("exercise_id"));
-                solution.setUser_id(rs.getInt("user_id"));
-                return solution;
+                Exercise exercise = new Exercise();
+                exercise.setId(rs.getInt("id"));
+                exercise.setTitle(rs.getString("title"));
+                exercise.setDescription(rs.getString("description"));
+                return exercise;
             }
 
         } catch (SQLException e) {

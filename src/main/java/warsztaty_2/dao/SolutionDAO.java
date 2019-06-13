@@ -18,9 +18,7 @@ public class SolutionDAO {
 
     public void Create(Solution solution) {
 
-        try {
-
-            Connection con = DbUtil.getCon();
+        try (Connection con = DbUtil.getCon()) {
 
             if (solution.getId() == 0) {
 
@@ -48,9 +46,7 @@ public class SolutionDAO {
 
     public void Update(Solution solution) {
 
-        try {
-
-            Connection con = DbUtil.getCon();
+        try (Connection con = DbUtil.getCon()) {
 
             if (solution.getId() == 0) {
 
@@ -91,9 +87,7 @@ public class SolutionDAO {
 
     public void Delete(Solution solution) {
 
-        try {
-
-            Connection con = DbUtil.getCon();
+        try (Connection con = DbUtil.getCon()) {
 
             if (solution.getId() != 0) {
 
@@ -110,15 +104,13 @@ public class SolutionDAO {
         }
     }
 
-    public List<Solution> findAll(int id) {
+    public List<Solution> findAll() {
 
         List<Solution> solutions = new ArrayList<>();
 
-        try {
+        try (Connection con = DbUtil.getCon()) {
 
-            Connection con = DbUtil.getCon();
-
-            String sql = "SELECT FROM solution";
+            String sql = "SELECT * FROM solution";
             PreparedStatement stmt = con.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
 
@@ -144,12 +136,11 @@ public class SolutionDAO {
 
     public Solution findById(int id) {
 
-        try {
+        try (Connection con = DbUtil.getCon()) {
 
-            Connection con = DbUtil.getCon();
-
-            String sql = "SELECT FROM solution";
+            String sql = "SELECT * FROM solution WHERE id=?";
             PreparedStatement stmt = con.prepareStatement(sql);
+            stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
