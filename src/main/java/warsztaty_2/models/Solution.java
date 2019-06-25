@@ -7,21 +7,20 @@ import java.time.LocalDateTime;
  * @author Tomek
  */
 public class Solution {
-    
+
     private int id;
     private LocalDateTime created;
     private LocalDateTime updated;
     private String description;
-    private int exercise_id;
-    private int user_id;
+    private int exerciseId;
+    private long usersId;
 
-    public Solution(LocalDateTime created, LocalDateTime updated, String description, int exercise_id, int user_id) {
-        
+    public Solution(LocalDateTime created, String description, int exerciseId, long usersId) {
+
         this.created = created;
-        this.updated = updated;
         this.description = description;
-        this.exercise_id = exercise_id;
-        this.user_id = user_id;
+        this.exerciseId = exerciseId;
+        this.usersId = usersId;
     }
 
     public Solution() {
@@ -34,7 +33,7 @@ public class Solution {
     public void setId(int id) {
         this.id = id;
     }
-    
+
     public LocalDateTime getCreated() {
         return created;
     }
@@ -59,19 +58,24 @@ public class Solution {
         this.description = description;
     }
 
-    public int getExercise_id() {
-        return exercise_id;
+    public int getExerciseId() {
+        return exerciseId;
     }
 
-    public void setExercise_id(int exercise_id) {
-        this.exercise_id = exercise_id;
+    public void setExerciseId(int exerciseId) {
+        this.exerciseId = exerciseId;
     }
 
-    public int getUser_id() {
-        return user_id;
+    public long getUsersId() {
+        return usersId;
     }
 
-    public void setUser_id(int user_id) {
-        this.user_id = user_id;
+    public void setUsersId(long usersId) {
+        this.usersId = usersId;
+    }
+
+    @Override
+    public String toString() {
+        return "Solution{" + "id=" + id + ", created=" + created + ", updated=" + updated + ", description=" + description + ", exerciseId=" + exerciseId + ", usersId=" + usersId + '}';
     }
 }

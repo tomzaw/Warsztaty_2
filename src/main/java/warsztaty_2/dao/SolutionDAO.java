@@ -4,11 +4,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import java.time.LocalDateTime;
 import warsztaty_2.models.Solution;
 import util.DbUtil;
+import java.time.LocalDateTime;
 
 /**
  *
@@ -16,19 +17,29 @@ import util.DbUtil;
  */
 public class SolutionDAO {
 
-    public void Create(Solution solution) {
+    public void create(Solution solution) {
 
         try (Connection con = DbUtil.getCon()) {
 
             if (solution.getId() == 0) {
 
-                String sql = "INSERT INTO solution(created, updated, description, exercise_id, user_id) VALUES(?, ?, ?, ?, ?)";
+                String sql = "INSERT INTO solution(created, updated, description, exercise_id, users_id) VALUES(?, ?, ?, ?, ?)";
                 PreparedStatement stmt = con.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
-                stmt.setString(1, solution.getCreated().toString());
-                stmt.setString(2, solution.getUpdated().toString());
+                LocalDateTime created = solution.getCreated();
+                if (created != null) {
+                    stmt.setString(1, created.toString());
+                } else {
+                    stmt.setString(1, null);
+                }
+                LocalDateTime updated = solution.getCreated();
+                if (updated != null) {
+                    stmt.setString(2, updated.toString());
+                } else {
+                    stmt.setString(2, null);
+                }
                 stmt.setString(3, solution.getDescription());
-                stmt.setInt(4, solution.getExercise_id());
-                stmt.setInt(5, solution.getUser_id());
+                stmt.setInt(4, solution.getExerciseId());
+                stmt.setLong(5, solution.getUsersId());
                 stmt.executeUpdate();
                 ResultSet rs = stmt.getGeneratedKeys();
 
@@ -44,19 +55,29 @@ public class SolutionDAO {
         }
     }
 
-    public void Update(Solution solution) {
+    public void update(Solution solution) {
 
         try (Connection con = DbUtil.getCon()) {
 
             if (solution.getId() == 0) {
 
-                String sql = "INSERT INTO solution(created, updated, description, exercise_id, user_id) VALUES(?, ?, ?, ?, ?)";
+                String sql = "INSERT INTO solution(created, updated, description, exercise_id, users_id) VALUES(?, ?, ?, ?, ?)";
                 PreparedStatement stmt = con.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
-                stmt.setString(1, solution.getCreated().toString());
-                stmt.setString(2, solution.getUpdated().toString());
+                LocalDateTime created = solution.getCreated();
+                if (created != null) {
+                    stmt.setString(1, created.toString());
+                } else {
+                    stmt.setString(1, null);
+                }
+                LocalDateTime updated = solution.getCreated();
+                if (updated != null) {
+                    stmt.setString(2, updated.toString());
+                } else {
+                    stmt.setString(2, null);
+                }
                 stmt.setString(3, solution.getDescription());
-                stmt.setInt(4, solution.getExercise_id());
-                stmt.setInt(5, solution.getUser_id());
+                stmt.setInt(4, solution.getExerciseId());
+                stmt.setLong(5, solution.getUsersId());
                 stmt.executeUpdate();
                 ResultSet rs = stmt.getGeneratedKeys();
 
@@ -67,16 +88,25 @@ public class SolutionDAO {
 
             } else {
 
-                String sql = "UPDATE solution SET created=?, updated=?, description=?, exercise_id=?, user_id=? WHERE id=?";
+                String sql = "UPDATE solution SET created=?, updated=?, description=?, exercise_id=?, users_id=? WHERE id=?";
                 PreparedStatement stmt = con.prepareStatement(sql);
-                stmt.setString(1, solution.getCreated().toString());
-                stmt.setString(2, solution.getUpdated().toString());
+                LocalDateTime created = solution.getCreated();
+                if (created != null) {
+                    stmt.setString(1, created.toString());
+                } else {
+                    stmt.setString(1, null);
+                }
+                LocalDateTime updated = solution.getCreated();
+                if (updated != null) {
+                    stmt.setString(2, updated.toString());
+                } else {
+                    stmt.setString(2, null);
+                }
                 stmt.setString(3, solution.getDescription());
-                stmt.setInt(4, solution.getExercise_id());
-                stmt.setInt(5, solution.getUser_id());
+                stmt.setInt(4, solution.getExerciseId());
+                stmt.setLong(5, solution.getUsersId());
                 stmt.setInt(6, solution.getId());
                 stmt.executeUpdate();
-                ResultSet rs = stmt.getGeneratedKeys();
             }
 
         } catch (SQLException e) {
@@ -85,7 +115,7 @@ public class SolutionDAO {
         }
     }
 
-    public void Delete(Solution solution) {
+    public void delete(Solution solution) {
 
         try (Connection con = DbUtil.getCon()) {
 
@@ -110,7 +140,7 @@ public class SolutionDAO {
 
         try (Connection con = DbUtil.getCon()) {
 
-            String sql = "SELECT * FROM solution";
+            String sql = "SELECT * FROM solution order by created desc";
             PreparedStatement stmt = con.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
 
@@ -118,11 +148,21 @@ public class SolutionDAO {
 
                 Solution solution = new Solution();
                 solution.setId(rs.getInt("id"));
-                solution.setCreated(LocalDateTime.parse(rs.getString("created")));
-                solution.setUpdated(LocalDateTime.parse(rs.getString("updated")));
+                Timestamp created = rs.getTimestamp("created");
+                if (created != null) {
+                    solution.setCreated(created.toLocalDateTime());
+                } else {
+                    solution.setCreated(null);
+                }
+                Timestamp updated = rs.getTimestamp("updated");
+                if (updated != null) {
+                    solution.setUpdated(updated.toLocalDateTime());
+                } else {
+                    solution.setUpdated(null);
+                }
                 solution.setDescription(rs.getString("description"));
-                solution.setExercise_id(rs.getInt("exercise_id"));
-                solution.setUser_id(rs.getInt("user_id"));
+                solution.setExerciseId(rs.getInt("exercise_id"));
+                solution.setUsersId(rs.getLong("users_id"));
                 solutions.add(solution);
             }
 
@@ -147,11 +187,21 @@ public class SolutionDAO {
 
                 Solution solution = new Solution();
                 solution.setId(rs.getInt("id"));
-                solution.setCreated(LocalDateTime.parse(rs.getString("created")));
-                solution.setUpdated(LocalDateTime.parse(rs.getString("updated")));
+                Timestamp created = rs.getTimestamp("created");
+                if (created != null) {
+                    solution.setCreated(created.toLocalDateTime());
+                } else {
+                    solution.setCreated(null);
+                }
+                Timestamp updated = rs.getTimestamp("updated");
+                if (updated != null) {
+                    solution.setUpdated(updated.toLocalDateTime());
+                } else {
+                    solution.setUpdated(null);
+                }
                 solution.setDescription(rs.getString("description"));
-                solution.setExercise_id(rs.getInt("exercise_id"));
-                solution.setUser_id(rs.getInt("user_id"));
+                solution.setExerciseId(rs.getInt("exercise_id"));
+                solution.setUsersId(rs.getLong("users_id"));
                 return solution;
             }
 
@@ -161,5 +211,87 @@ public class SolutionDAO {
         }
 
         return null;
+    }
+
+    public List<Solution> findAllByUsersId(long usersId) {
+
+        List<Solution> solutions = new ArrayList<>();
+
+        try (Connection con = DbUtil.getCon()) {
+
+            String sql = "SELECT * FROM solution WHERE users_id=? order by created desc";
+            PreparedStatement stmt = con.prepareStatement(sql);
+            stmt.setLong(1, usersId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+
+                Solution solution = new Solution();
+                solution.setId(rs.getInt("id"));
+                Timestamp created = rs.getTimestamp("created");
+                if (created != null) {
+                    solution.setCreated(created.toLocalDateTime());
+                } else {
+                    solution.setCreated(null);
+                }
+                Timestamp updated = rs.getTimestamp("updated");
+                if (updated != null) {
+                    solution.setUpdated(updated.toLocalDateTime());
+                } else {
+                    solution.setUpdated(null);
+                }
+                solution.setDescription(rs.getString("description"));
+                solution.setExerciseId(rs.getInt("exercise_id"));
+                solution.setUsersId(rs.getLong("users_id"));
+                solutions.add(solution);
+            }
+
+        } catch (SQLException e) {
+
+            e.printStackTrace();
+        }
+
+        return solutions;
+    }
+
+    public List<Solution> findAllByExerciseId(int exerciseId) {
+
+        List<Solution> solutions = new ArrayList<>();
+
+        try (Connection con = DbUtil.getCon()) {
+
+            String sql = "SELECT * FROM solution WHERE exercise_id=? order by created desc";
+            PreparedStatement stmt = con.prepareStatement(sql);
+            stmt.setInt(1, exerciseId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+
+                Solution solution = new Solution();
+                solution.setId(rs.getInt("id"));
+                Timestamp created = rs.getTimestamp("created");
+                if (created != null) {
+                    solution.setCreated(created.toLocalDateTime());
+                } else {
+                    solution.setCreated(null);
+                }
+                Timestamp updated = rs.getTimestamp("updated");
+                if (updated != null) {
+                    solution.setUpdated(updated.toLocalDateTime());
+                } else {
+                    solution.setUpdated(null);
+                }
+                solution.setDescription(rs.getString("description"));
+                solution.setExerciseId(rs.getInt("exercise_id"));
+                solution.setUsersId(rs.getLong("users_id"));
+                solutions.add(solution);
+            }
+
+        } catch (SQLException e) {
+
+            e.printStackTrace();
+        }
+
+        return solutions;
     }
 }

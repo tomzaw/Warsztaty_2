@@ -3,30 +3,32 @@ package warsztaty_2.models;
 import org.mindrot.jbcrypt.BCrypt;
 
 public class User {
-    
-    private int id;
-    private String username;
-    private String email; //Should be unique.
-    private String password;
 
-    public User(String username, String email, String password) {
-        
+    private long id;
+    private String username;
+    private String email;
+    private String password;
+    private int groupId;
+
+    public User(String username, String email, String password, int groupId) {
+
         this.username = username;
         this.email = email;
         setPassword(password);
+        this.groupId = groupId;
     }
 
     public User() {
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
-    
+
     public String getUsername() {
         return username;
     }
@@ -48,7 +50,19 @@ public class User {
     }
 
     public void setPassword(String password) {
-        
         this.password = BCrypt.hashpw(password, BCrypt.gensalt());
+    }
+    
+    public void setGroupId(int groupId) {
+        this.groupId = groupId;
+    }
+
+    public int getGroupId() {
+        return groupId;
+    }
+    
+    @Override
+    public String toString() {
+        return "User{" + "id=" + id + ", username=" + username + ", email=" + email + ", groupId=" + groupId + '}';
     }
 }

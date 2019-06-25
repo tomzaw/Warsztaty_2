@@ -15,13 +15,13 @@ import util.DbUtil;
  */
 public class GroupDAO {
 
-    public void Create(Group group) {
+    public void create(Group group) {
 
         try (Connection con = DbUtil.getCon()) {
 
             if (group.getId() == 0) {
 
-                String sql = "INSERT INTO group(name) VALUES(?)";
+                String sql = "INSERT INTO user_group(name) VALUES(?)";
                 PreparedStatement stmt = con.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
                 stmt.setString(1, group.getName());
                 stmt.executeUpdate();
@@ -39,13 +39,13 @@ public class GroupDAO {
         }
     }
 
-    public void Update(Group group) {
+    public void update(Group group) {
 
         try (Connection con = DbUtil.getCon()) {
 
             if (group.getId() == 0) {
 
-                String sql = "INSERT INTO group(name) VALUES(?)";
+                String sql = "INSERT INTO user_group(name) VALUES(?)";
                 PreparedStatement stmt = con.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
                 stmt.setString(1, group.getName());
                 stmt.executeUpdate();
@@ -58,12 +58,11 @@ public class GroupDAO {
 
             } else {
 
-                String sql = "UPDATE group SET name=? WHERE id=?";
+                String sql = "UPDATE user_group SET name=? WHERE id=?";
                 PreparedStatement stmt = con.prepareStatement(sql);
                 stmt.setString(1, group.getName());
                 stmt.setInt(2, group.getId());
                 stmt.executeUpdate();
-                ResultSet rs = stmt.getGeneratedKeys();
             }
 
         } catch (SQLException e) {
@@ -72,13 +71,13 @@ public class GroupDAO {
         }
     }
 
-    public void Delete(Group group) {
+    public void delete(Group group) {
 
         try (Connection con = DbUtil.getCon()) {
 
             if (group.getId() != 0) {
 
-                String sql = "DELETE FROM group WHERE id=?";
+                String sql = "DELETE FROM user_group WHERE id=?";
                 PreparedStatement stmt = con.prepareStatement(sql);
                 stmt.setInt(1, group.getId());
                 stmt.executeUpdate();
@@ -97,7 +96,7 @@ public class GroupDAO {
 
         try (Connection con = DbUtil.getCon()) {
 
-            String sql = "SELECT * FROM Group";
+            String sql = "SELECT * FROM user_group";
             PreparedStatement stmt = con.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
 
@@ -121,7 +120,7 @@ public class GroupDAO {
 
         try (Connection con = DbUtil.getCon()) {
 
-            String sql = "SELECT * FROM group WHERE id=?";
+            String sql = "SELECT * FROM user_group WHERE id=?";
             PreparedStatement stmt = con.prepareStatement(sql);
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
